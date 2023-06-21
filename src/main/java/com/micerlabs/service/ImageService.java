@@ -43,8 +43,9 @@ public class ImageService {
      * @return success: 1; fail: 0
      */
     public int receiveImage(MultipartFile file,String hash) {
-        String imgId = Sid.next();
-        String dir = createDirIfNotExist(imgId);
+        Random r=new Random();
+        String imgId = String.format("%08d",r.nextInt(100000000))+Sid.next();//解决热点问题
+        String dir = createDirIfNotExist(imgId);//解决热点问题
         //检查hash
         try (InputStream ins = file.getInputStream()) {
 
@@ -126,7 +127,7 @@ public class ImageService {
      * @return 图片存放路径
      */
     public String createDirIfNotExist(String id) {
-        String dir = localPath + id.substring(0, 3) + File.separator + id.substring(3, 6) + File.separator;
+        String dir = localPath + id.substring(0, 4) + File.separator + id.substring(4, 8) + File.separator;
         File file = new File(dir);
         if (!file.exists() && !file.mkdirs()) {
             // 目录创建失败
@@ -189,7 +190,7 @@ public class ImageService {
                 fos.write(buffer, 0, bytesRead);
             }
 
-            System.out.println("文件解压成功！");
+            //System.out.println("文件解压成功！");
 
         } catch (IOException e) {
             e.printStackTrace();
