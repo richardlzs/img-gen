@@ -74,6 +74,11 @@ public class ImageController {
         return "1";
     }
 
+    @GetMapping("/getuserinfo")
+    public String getUserInfo(Authentication authentication) {
+        return ((User)authentication.getPrincipal()).getUsername();
+    }
+
 
     /**
      *
