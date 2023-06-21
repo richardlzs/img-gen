@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <meta charset="utf-8">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>LowAVL 图片应用</title>
+        <link href="web/magnific-popup.min.css" rel="stylesheet" />
+        <script src="web/jquery.min.js"></script>
+        <script src="web/jquery.magnific-popup.min.js"></script>
+        <style>
+                * {
+                        margin: 0;
+                        padding: 0;
+                        font-family: 'montserrat', sans-serif;
+                        box-sizing: border-box;
+                }
+
+                .gallery-section {
+                        width: 100%;
+                        padding: 60px 0;
+                        background: #f1f1f1;
+                }
+
+                .inner-width {
+                        width: 100%;
+                        max-width: 1200px;
+                        margin: auto;
+                        padding: 0 20px;
+                }
+
+                .gallery-section h1 {
+                        text-align: center;
+                        text-transform: uppercase;
+                        color: #333;
+                }
+
+                .border {
+                        width: 180px;
+                        height: 4px;
+                        background: #333;
+                        margin: 60px auto;
+                }
+
+                .gallery-section .gallery {
+                        display: flex;
+                        flex-wrap: wrap-reverse;
+                        justify-content: center;
+                }
+
+                .gallery-section .image {
+                        flex: 25%;
+                        overflow: hidden;
+                        cursor: pointer;
+                }
+
+                .gallery-section .image img {
+                        width: 100%;
+                        height: 100%;
+                        transition: 0.4s;
+                }
+
+                .gallery-section .image:hover img {
+                        transform: scale(0.9) rotate(0deg);
+                }
+
+                @media screen and (max-width: 960px) {
+                        .gallery-section .image {
+                                flex: 33.33%;
+                        }
+                }
+
+                @media screen and (max-width: 768px) {
+                        .gallery-section .image {
+                                flex: 50%;
+                        }
+                }
+
+                @media screen and (max-width: 480px) {
+                        .gallery-section .image {
+                                flex: 100%;
+                        }
+                }
+        </style>
+
+</head>
+
+<body>
+
+
+        <div class="gallery-section">
+                <div class="inner-width">
+                        <div style="text-align: right;">
+                                <p id="uname0" style="color: black;">...</p>
+                                <a href="/logout">登出</a>
+                        </div>
+                        <h1>LowAVL 图片应用</h1>
+                        <div class="border"></div>
+                        <div class="gallery" id="imgBox">
+
+                        </div>
+                </div>
+        </div>
+
+
+
+
+        <script>
+                function testlogin() {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('GET', "https://lowavl.osmiumarc.top/api/loggedIn", true);
+                        xhr.send();
+                        xhr.onreadystatechange = function () {
+                                console.log(xhr.readyState + "  " + xhr.status)
+                                if (xhr.readyState == 4) {
+                                        if (xhr.status == 200) {
+                                                start();
+                                                getusername();
+                                        } else {
+                                                location.href = "https://lowavl.osmiumarc.top/login";
+                                        }
+                                }
+                        };
+                }
+                function getusername() {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('GET', "https://lowavl.osmiumarc.top/api/getuserinfo", true);
+                        xhr.send();
+                        xhr.onreadystatechange = function () {
+                                console.log(xhr.readyState + "  " + xhr.status+"  "+xhr.responseText)
+                                if (xhr.readyState == 4 && xhr.status == 200) {
+                                        $("#uname0").text(xhr.responseText)
+                                }
+                        };
+                }
+                function get() {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('GET', "https://lowavl.osmiumarc.top/api/list/last?n=10", true);
+                        xhr.send();
+                        xhr.onreadystatechange = function () {
+                                if (xhr.readyState == 4 && xhr.status == 200) {
+                                        const res = JSON.parse(xhr.responseText);
+                                        const img = res.data;
+                                        let a = document.getElementsByTagName('img');
+                                        const imgBox = document.getElementById("imgBox");
+                                        imgBox.innerHTML = "";
+                                        for (let i = 0; i < img.length; i++) {
+                                                imgBox.innerHTML += `<a class='image' href=${img[i].path}><img id='img${i}'/></a>`;
+                                                const imgObjPreview = document.getElementById("img" + i);
+                                                imgObjPreview.src = img[i].path;
+                                                //imgObjPreview.style = "box-shadow: 2px 2px 2px 2px #c0c0c0; border-radius: 12px; margin: 5% 0%; ";
+                                        };
+                                        $('.gallery').magnificPopup({
+                                                delegate: 'a',
+                                                type: 'image',
+                                                gallery: {
+                                                        enabled: true
+                                                }
+                                        })
+                                }
+                        };
+                }
+                function start() {
+                        get();
+                        setInterval(() => {
+                                console.log('每5秒获取一次');
+                                get();
+                        }, 5000);
+                }
+                testlogin();
+
+
+        </script>
+</body>
+
+</html>
