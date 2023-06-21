@@ -31,4 +31,9 @@ public class ImageController {
         }
         return Result.OK().build();
     }
+
+    @GetMapping("/loggedIn")
+    public String isLoggedIn() {
+        return "1";
+    }
 }
