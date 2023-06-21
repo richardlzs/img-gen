@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+        <meta charset="utf-8">
+        <title>LowAVL 图片应用</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script>
+                function testlogin() {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('GET', "https://lowavl.osmiumarc.top/api/loggedIn", true);
+                        xhr.send();
+                        xhr.onreadystatechange = function () {
+                                console.log(xhr.readyState + "  " + xhr.status)
+                                if (xhr.readyState == 4) {
+                                        if (xhr.status == 200) {
+                                                start();
+                                        }else{
+                                                location.href = "https://lowavl.osmiumarc.top/login";
+                                        }
+                                }
+                        };
+                }
+                testlogin();
+        </script>
+        <script>
+                function get() {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('GET', "https://lowavl.osmiumarc.top/api/list/last?n=10", true);
+                        xhr.send();
+                        xhr.onreadystatechange = function () {
+                                if (xhr.readyState == 4 && xhr.status == 200) {
+                                        const res = JSON.parse(xhr.responseText);
+                                        const img = res.data;
+                                        let a = document.getElementsByTagName('img');
+                                        for (let i = 0; i < img.length; i++) {
+                                                const imgBox = document.getElementById("imgBox");
+                                                imgBox.innerHTML += `<img id='img${i}'/>`;
+                                                const imgObjPreview = document.getElementById("img" + i);
+                                                imgObjPreview.src = img[i].path;
+                                                imgObjPreview.style = "box-shadow: 2px 2px 2px 2px #c0c0c0; border-radius: 12px; margin: 5% 0%; ";
+                                        };
+                                }
+                        };
+                }
+                function start() {
+                        get();
+                        setInterval(() => {
+                                console.log('每5秒获取一次');
+                                get();
+                        }, 5000);
+                }
+
+        </script>
+        <style>
+                body {
+                        background: #ffffff;
+                        margin: 0px auto;
+                        padding: 10% 10%;
+                }
+
+                #imgBox {
+                        display: flex;
+                        text-align: center;
+                        justify-content: center;
+                        flex-direction: column;
+                        padding: 5% 5%;
+                }
+
+                #header {
+                        color: black;
+                        margin: 0px auto 20px auto;
+                        text-align: center;
+                        font-size: 30px;
+                        font-weight: bold;
+                }
+
+                #foot {
+                        color: black;
+                        margin: 40px auto 20px auto;
+                        text-align: center;
+                        font-size: 20px;
+                        font-weight: bold;
+                }
+        </style>
+</head>
+
+<body>
+
+        <div id="header">LowAVL 图片应用</div>
+        <div id="imgBox"></div>
+        <div id="foot">信息系统安全课设</br>2022</div>
+</body>
+
+</html>
