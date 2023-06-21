@@ -31,4 +31,3 @@ mybatis:
   type-aliases-package: com.micerlabs.pojo
   mapper-locations: classpath:mapper/*.xml
 
-debug: true

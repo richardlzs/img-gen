@@ -2,12 +2,13 @@ package com.micerlabs.controller;
 
 import com.micerlabs.pojo.Result;
 import com.micerlabs.service.ImageService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,8 +17,7 @@ public class ImageController {
     @Resource
     private ImageService imageService;
 
-    private Map<String,Long> ip_logintime=new HashMap<>();
-
+    private Map<String, Long> ip_logintime = new HashMap<>();
 
 
     @GetMapping("/list/last")
@@ -32,13 +32,14 @@ public class ImageController {
     }
 
     @PostMapping("/image")
-    public Result receiveImage(@RequestParam("file") MultipartFile file, @RequestHeader("hash") String hash, HttpServletRequest request) {
-        String ip=request.getRemoteAddr();
-        if(!acceptRequest(ip))
-        {
+    public Result receiveImage(@RequestParam("file") MultipartFile file, @RequestHeader("hash") String hash, HttpServletRequest request, Authentication authentication) {
+        String uname = ((User) authentication.getPrincipal()).getUsername();
+        System.out.println(uname + "上传了文件  大小=" + file.getSize());
+        String ip = request.getRemoteAddr();
+        if (!acceptRequest(ip)) {
             return Result.BAD().msg("请求过于频繁，请3秒后再试").build();
         }
-        int receive = imageService.receiveImage(file,hash);
+        int receive = imageService.receiveImage(file, hash);
         if (receive == 0) {
             return Result.BAD().build();
         }
@@ -50,24 +51,19 @@ public class ImageController {
         return "1";
     }
 
-    private boolean acceptRequest(String ip)
-    {
-        Long timestamp=System.currentTimeMillis();
-        if (ip_logintime.containsKey(ip))
-        {
-            Long last_t=ip_logintime.get(ip);
-            if ((timestamp-last_t)<1000)
-            {
-                ip_logintime.put(ip,timestamp+2000);
+    private boolean acceptRequest(String ip) {
+        Long timestamp = System.currentTimeMillis();
+        if (ip_logintime.containsKey(ip)) {
+            Long last_t = ip_logintime.get(ip);
+            if ((timestamp - last_t) < 1000) {
+                ip_logintime.put(ip, timestamp + 2000);
                 return false;
-            }else
-            {
-                ip_logintime.put(ip,timestamp);
+            } else {
+                ip_logintime.put(ip, timestamp);
                 return true;
             }
-        }else
-        {
-            ip_logintime.put(ip,timestamp);
+        } else {
+            ip_logintime.put(ip, timestamp);
             return true;
         }
     }
