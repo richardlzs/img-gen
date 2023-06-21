@@ -19,8 +19,8 @@ spring:
       pool-name: DateSourceHikariCP
       max-lifetime: 1800000
       connection-test-query: SELECT 1
-    url: jdbc:mysql://127.0.0.1:3307/test_db?useUnicode=true&serverTimezone=Asia/Shanghai
-    password: ''
+    url: jdbc:mysql://127.0.0.1:3306/test_db?useUnicode=true&serverTimezone=Asia/Shanghai
+    password: 'lzs713000'
     username: root
   security:
     user:
